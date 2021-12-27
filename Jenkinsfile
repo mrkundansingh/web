@@ -14,20 +14,12 @@ pipeline {
                 sh 'pwd'
             }
         }
-	node {
-	  def remote = [:]
-	  remote.name = 'server1'
-	  remote.host = 'server1'
-	  remote.user = 'kundan'
-	  remote.password = 'kundan'
-	  remote.allowAnyHosts = true
-	  stage('copybuild on remote host') {
-    	      steps {
-	       	echo 'COPY FILE TO REMOTE HOST'
-		sshPut remote: remote, from: 'build.zip', into: '/var/www/html/'
-		sshCommand remote: remote, command: "unzip -o -d /var/www/html/ /var/www/html/"
-	      }
-	  }
+	stage('copybuild on remote host') {
+    	    steps {
+	      	echo 'COPY FILE TO REMOTE HOST'
+		sh 'scp -r build.zip kundan@server1:/tmp/'
+		sh 'ssh kundan@server1 sudo unzip -o -d /var/www/html/ /tmp/build.zip'
+	    }
 	}
     }
 }
